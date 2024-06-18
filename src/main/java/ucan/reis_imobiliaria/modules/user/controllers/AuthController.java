@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -66,6 +67,7 @@ public class AuthController {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 String jwt = jwtUtils.generateJwtToken(authentication);
+                Date expirationDate = jwtUtils.getExpirationDateFromJwtToken(jwt);
 
                 UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
                 List<String> roles = userDetails.getAuthorities().stream()
@@ -82,8 +84,8 @@ public class AuthController {
                                 userDetails.getNif(),
                                 userDetails.getAddress(),
                                 userDetails.getNationality(),
-                                userDetails.getMaritalStatus()
-                                ));
+                                userDetails.getMaritalStatus(),
+                                expirationDate));
         }
 
         @PostMapping("/signup")
@@ -109,8 +111,7 @@ public class AuthController {
                                 signUpRequest.getAddress(),
                                 signUpRequest.getNif(),
                                 signUpRequest.getNationality(),
-                                signUpRequest.getMaritalStatus()
-                                );
+                                signUpRequest.getMaritalStatus());
 
                 Set<String> strRoles = signUpRequest.getRole();
                 Set<Role> roles = new HashSet<>();
@@ -149,11 +150,11 @@ public class AuthController {
                 userRepository.save(user);
 
                 return ResponseEntity.ok(new SignUpResponse(
-                                user.getPkUser(), 
-                                user.getUsername(), 
+                                user.getPkUser(),
+                                user.getUsername(),
                                 user.getFullName(),
                                 user.getEmail(),
-                                user.getPhone(), 
+                                user.getPhone(),
                                 user.getNif(),
                                 user.getAddress(),
                                 user.getNationality(),

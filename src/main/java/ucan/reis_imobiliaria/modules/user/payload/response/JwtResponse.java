@@ -1,5 +1,6 @@
 package ucan.reis_imobiliaria.modules.user.payload.response;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,20 +17,21 @@ public class JwtResponse {
     private String address;
     private String nationality;
     private String maritalStatus;
+    private Date expirationDate;
 
     public JwtResponse(
-        String accessToken, 
-        UUID pkUser, 
-        String username, 
-        String fullName, 
-        String email, 
-        String phone,
-        List<String> roles,
-        String nif,
-        String address,
-        String nationality,
-        String maritalStatus
-    ) {
+            String accessToken,
+            UUID pkUser,
+            String username,
+            String fullName,
+            String email,
+            String phone,
+            List<String> roles,
+            String nif,
+            String address,
+            String nationality,
+            String maritalStatus,
+            Date expirationDate) {
         this.token = accessToken;
         this.pkUser = pkUser;
         this.username = username;
@@ -41,6 +43,7 @@ public class JwtResponse {
         this.address = address;
         this.nationality = nationality;
         this.maritalStatus = maritalStatus;
+        this.expirationDate = expirationDate;
     }
 
     public String getAccessToken() {
@@ -106,7 +109,7 @@ public class JwtResponse {
     public void setRoles(List<String> roles) {
         this.roles = roles;
     }
-    
+
     public String getNif() {
         return nif;
     }
@@ -137,5 +140,13 @@ public class JwtResponse {
 
     public void setMaritalStatus(String maritalStatus) {
         this.maritalStatus = maritalStatus;
+    }
+
+    public Date getExpirationDate() {
+        return expirationDate;
+    }
+
+    public void setExpirationDate(Date expirationDate) {
+        this.expirationDate = expirationDate;
     }
 }

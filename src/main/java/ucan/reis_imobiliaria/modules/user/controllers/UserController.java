@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,7 +20,9 @@ import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import ucan.reis_imobiliaria.modules.user.dto.ChangePasswordDTO;
 import ucan.reis_imobiliaria.modules.user.dto.UserDTO;
+import ucan.reis_imobiliaria.modules.user.dto.UserUpdateDTO;
 import ucan.reis_imobiliaria.modules.user.entities.User;
 import ucan.reis_imobiliaria.modules.user.repository.UserRepository;
 import ucan.reis_imobiliaria.modules.user.useCases.UserUseCase;
@@ -45,6 +48,25 @@ public class UserController {
         User user = userOptional.orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
         
         return user;
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable UUID id, @Validated @RequestBody UserUpdateDTO userUpdateDTO) {
+        try {
+            return ResponseEntity.ok(userUseCase.updateUser(id, userUpdateDTO));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}/change-password")
+    public ResponseEntity<String> changePassword(@PathVariable UUID id, @Validated @RequestBody ChangePasswordDTO changePasswordDTO) {
+        try {
+            userUseCase.changePassword(id, changePasswordDTO);
+            return ResponseEntity.ok("Password changed successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PatchMapping("/update/{id}")
