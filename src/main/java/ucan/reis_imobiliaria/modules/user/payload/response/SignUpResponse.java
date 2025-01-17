@@ -17,6 +17,7 @@ public class SignUpResponse {
     private String address;
     private String nationality;
     private String maritalStatus;
+    private String urlDocument;
 
     public SignUpResponse(
         UUID pkUser, 
@@ -28,7 +29,8 @@ public class SignUpResponse {
         String address,
         String nationality,
         String maritalStatus,
-        String message
+        String message,
+        String urlDocument
     ) {
         this.pkUser = pkUser;
         this.username = username;
@@ -39,6 +41,6 @@ public class SignUpResponse {
         this.nif = nif;
         this.address = address;
         this.nationality = nationality;
-        
+        this.urlDocument = urlDocument;
     }
 }

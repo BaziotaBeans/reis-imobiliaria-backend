@@ -63,7 +63,7 @@ public class PropertyController {
     @Autowired
     private PropertyImageRepository propertyImageRepository;
 
-    @PreAuthorize("hasRole('COMPANY')")
+
     @GetMapping("/")
     public ResponseEntity<List<PropertyEntity>> findAll(@RequestParam(required = false) String title) {
         List<PropertyEntity> properties = new ArrayList<PropertyEntity>();
@@ -122,11 +122,14 @@ public class PropertyController {
 
     }
 
-    @PreAuthorize("hasRole('COMPANY')")
+    //@PreAuthorize("hasRole('COMPANY')")
     @GetMapping("/{id}")
-    public ResponseEntity<PropertyEntity> findById(@PathVariable("id") UUID pkProperty) {
-        PropertyEntity property = propertyRepository.findById(pkProperty)
-                .orElseThrow(() -> new ResourceNotFoundException("Not found Tutorial with id = " + pkProperty));
+    public ResponseEntity<PropertyAndImageDTO> findById(@PathVariable("id") UUID pkProperty) {
+        PropertyAndImageDTO property = propertyRepository.findByPkProperty(pkProperty);
+
+        if (property == null) {
+            throw new ResourceNotFoundException("Not found Property with id = " + pkProperty);
+        }
 
         return new ResponseEntity<>(property, HttpStatus.OK);
     }

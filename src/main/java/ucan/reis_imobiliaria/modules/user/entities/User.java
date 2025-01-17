@@ -58,6 +58,8 @@ public class User {
 
     private String maritalStatus;
 
+    private String urlDocument;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(  name = "user_roles", 
           joinColumns = @JoinColumn(name = "user_id"), 
@@ -91,7 +93,8 @@ public class User {
       String address, 
       String nif,
       String nationality,
-      String maritalStatus
+      String maritalStatus,
+      String urlDocument
     ) {
       this.username = username;
       this.email = email;
@@ -102,6 +105,7 @@ public class User {
       this.nif = nif;
       this.nationality = nationality;
       this.maritalStatus = maritalStatus;
+      this.urlDocument = urlDocument;
     }
 
 

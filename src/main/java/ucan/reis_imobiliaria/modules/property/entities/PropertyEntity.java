@@ -96,6 +96,20 @@ public class PropertyEntity {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    @Column(nullable = false, columnDefinition = "double precision default 0.0")
+    private double latitude;
+
+    @Column(nullable = false, columnDefinition = "double precision default 0.0")
+    private double longitude;
+
+    // NOVOS CAMPOS ADICIONAIS
+    private String conservation;
+
+    private String propertyType;
+
+    @Column(columnDefinition = "double precision default 0.0")
+    private double condominiumFee;
+
     public PropertyEntity() {
 
     }

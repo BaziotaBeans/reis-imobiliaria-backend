@@ -48,4 +48,8 @@ public class ContractEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ContractStatus contractStatus;
+
+    private String signaturePropertyOwner;
+
+    private String signaturePropertyCustomer;
 }

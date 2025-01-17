@@ -1,5 +1,6 @@
 package ucan.reis_imobiliaria.modules.user.controllers;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,6 +37,12 @@ public class UserController {
 
     @Autowired
     private UserUseCase userUseCase;
+
+    @GetMapping("/findAll")
+    public ResponseEntity<List<User>> findAll() {
+        List<User> users = userUseCase.findAll();
+        return ResponseEntity.ok(users);
+    }
 
     @GetMapping("/findByLoggedUser")
     public User findByLoggedUser() {

@@ -24,4 +24,9 @@ public class PaymentUtils {
         }
         return endDate;
     }
+
+    public enum PaymentMethod {
+        REFERENCE,
+        MULTICAIXA_EXPRESS
+    }
 }

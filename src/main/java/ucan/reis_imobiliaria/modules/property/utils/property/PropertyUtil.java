@@ -25,11 +25,17 @@ public class PropertyUtil {
         propertyEntity.setFkCompany(propertyDTO.getFkCompany());
         propertyEntity.setFkPropertyType(propertyDTO.getFkPropertyType());
         propertyEntity.setPropertyStatus(propertyDTO.getPropertyStatus());
+        propertyEntity.setLatitude(propertyDTO.getLatitude());
+        propertyEntity.setLongitude(propertyDTO.getLongitude());
+
+        propertyEntity.setConservation(propertyDTO.getConservation());
+        propertyEntity.setPropertyType(propertyDTO.getPropertyType());
+        propertyEntity.setCondominiumFee(propertyDTO.getCondominiumFee());
 
         return propertyEntity;
     }
 
-    static public enum PropertyStatus {
+    public enum PropertyStatus {
         PUBLISHED, // Disponível para ser agendado para visitas
         STANDBY, // Aguardando ser publicado ou disponibilizado para visitas
         RENTED // Já foi arrendado, não está disponível para novas visitas

@@ -18,6 +18,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 import ucan.reis_imobiliaria.modules.order.utils.OrderUtil.OrderState;
+import ucan.reis_imobiliaria.modules.payment.utils.PaymentUtils.PaymentMethod;
 import ucan.reis_imobiliaria.modules.property.entities.PropertyEntity;
 import ucan.reis_imobiliaria.modules.user.entities.User;
 
@@ -53,4 +54,8 @@ public class OrderEntity {
     private OrderState orderState;
 
     private double totalValue;
+
+    @Enumerated(EnumType.STRING)
+    // @Column(nullable = false)
+    private PaymentMethod paymentMethod;
 }

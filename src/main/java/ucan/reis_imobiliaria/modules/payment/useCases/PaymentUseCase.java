@@ -1,6 +1,7 @@
 package ucan.reis_imobiliaria.modules.payment.useCases;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,6 +53,7 @@ public class PaymentUseCase {
         paymentEntity.setTotalValue(paymentDTO.getTotalValue());
         paymentEntity.setReference(paymentDTO.getReference());
         paymentEntity.setCreatedAt(LocalDateTime.now());
+        paymentEntity.setPaymentMethod(paymentDTO.getPaymentMethod());
         paymentRepository.save(paymentEntity);
 
         // Remover o OrderEntity
@@ -64,7 +66,11 @@ public class PaymentUseCase {
         contractEntity.setStartDate(paymentEntity.getCreatedAt());
         contractEntity.setEndDate(PaymentUtils.calculateEndDate(propertyEntity.getPaymentModality()));
         contractEntity.setCreatedAt(LocalDateTime.now());
-        contractEntity.setContractStatus(ContractStatus.ACTIVE);
+        contractEntity.setContractStatus(ContractStatus.PENDING);
         contractRepository.save(contractEntity);
+    }
+
+    public Optional<PaymentEntity> findLastPayment() {
+        return paymentRepository.findLastPayment();
     }
 }

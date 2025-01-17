@@ -37,6 +37,11 @@ public class SchedulingUseCase {
     @Autowired
     private UserRepository userRepository;
 
+
+    public List<SchedulingEntity> findAll() {
+        return schedulerRepository.findAll();
+    }
+
     public Optional<SchedulingEntity> createScheduling(UUID pkPropertySchedule, UUID pkProperty) {
 
         boolean exists = schedulerRepository.existsByPropertyScheduleIdAndCreatedAt(pkPropertySchedule,

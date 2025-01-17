@@ -14,6 +14,7 @@ import ucan.reis_imobiliaria.modules.image.entities.ImageEntity;
 import ucan.reis_imobiliaria.modules.property.dto.PropertyAndImageDTO;
 import ucan.reis_imobiliaria.modules.property.dto.PropertyImageDTO;
 import ucan.reis_imobiliaria.modules.property.entities.PropertyEntity;
+import ucan.reis_imobiliaria.modules.property.entities.PropertyScheduleEntity;
 
 @Transactional
 public interface PropertyRepository extends JpaRepository<PropertyEntity, UUID> {
@@ -77,4 +78,38 @@ public interface PropertyRepository extends JpaRepository<PropertyEntity, UUID> 
         return dtos;
 
     }
+
+    @Query("""
+    SELECT p, i FROM PropertyEntity p 
+    LEFT JOIN FETCH p.propertyImages pi 
+    LEFT JOIN FETCH pi.image i 
+    WHERE p.pkProperty = :pkProperty
+""")
+    List<Object[]> findPropertyAndImagesByPkProperty(UUID pkProperty);
+
+    default PropertyAndImageDTO findByPkProperty(UUID pkProperty) {
+        List<Object[]> results = findPropertyAndImagesByPkProperty(pkProperty);
+
+        Map<PropertyEntity, List<ImageEntity>> propertyImageMap = new HashMap<>();
+
+        for (Object[] result : results) {
+            PropertyEntity property = (PropertyEntity) result[0];
+            ImageEntity image = (ImageEntity) result[1];
+
+            propertyImageMap.computeIfAbsent(property, k -> new ArrayList<>()).add(image);
+        }
+
+        if (propertyImageMap.isEmpty()) {
+            return null; // Propriedade não encontrada
+        }
+
+        PropertyEntity property = propertyImageMap.keySet().iterator().next();
+        List<ImageEntity> images = propertyImageMap.get(property);
+
+        // Inclua schedules, se necessário, adaptando o DTO conforme necessário
+        return new PropertyAndImageDTO(property, images);
+    }
+
+
+
 }

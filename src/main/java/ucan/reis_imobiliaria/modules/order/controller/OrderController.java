@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -85,7 +86,17 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.CREATED).body(createdOrder);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erro ao criar a propriedade: " + e.getMessage());
+                    .body("Erro ao criar a pedido: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<String> deleteOrder(@PathVariable UUID orderId) {
+        try {
+            String response = orderUseCase.deleteOrderById(orderId);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
         }
     }
 

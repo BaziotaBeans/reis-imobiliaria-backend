@@ -48,6 +48,10 @@ public class PropertyUseCase {
         return propertyRepository.findAllPropertiesDataWithStatusTrue();
     }
 
+    public PropertyAndImageDTO findByPropertyAndImageByPkProperty(UUID pkProperty) {
+        return propertyRepository.findByPkProperty(pkProperty);
+    }
+
     // @Transactional
     public void delete(UUID pkProperty) {
         PropertyEntity propertyEntity = findById(pkProperty);

@@ -1,5 +1,6 @@
 package ucan.reis_imobiliaria.modules.user.useCases;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,6 +24,10 @@ public class UserUseCase {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    public List<User> findAll() {
+        return userRepository.findAll();
+    }
 
     public User findById(UUID pkUser) {
         Optional<User> userOptional = userRepository.findById(pkUser);

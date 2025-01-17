@@ -3,6 +3,7 @@ package ucan.reis_imobiliaria.modules.user.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,6 +15,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -68,6 +72,11 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/test/**").permitAll()
                         .requestMatchers("/api/company/**").permitAll()
                         .requestMatchers("/api/client/**").permitAll()
+                        .requestMatchers("/api/property/with-status-true").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Permitir OPTIONS
+//                        .requestMatchers("/api/scheduling/{pkPropertySchedule}/{pkProperty}").permitAll()
+                        .requestMatchers("/api/property/{id}").permitAll()
+                        .requestMatchers("/api/property/schedule/available/{id}").permitAll()
                         .anyRequest().authenticated());
 
         http.authenticationProvider(authenticationProvider());
@@ -77,6 +86,7 @@ public class WebSecurityConfig {
         return http.build();
     }
 
+
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -84,8 +94,22 @@ public class WebSecurityConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins("*")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH","OPTIONS");
+                        .allowedHeaders("*")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD");
             }
         };
     }
+
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.addAllowedOrigin("http://localhost:3001"); // Permitir o front-end
+//        configuration.addAllowedMethod("*"); // Permitir todos os métodos (GET, POST, etc.)
+//        configuration.addAllowedHeader("*"); // Permitir todos os cabeçalhos
+//        configuration.setAllowCredentials(true); // Permitir envio de cookies ou credenciais
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration); // Aplica o CORS globalmente
+//        return source;
+//    }
 }

@@ -93,14 +93,21 @@ public class AuthController {
                 if (userRepository.existsByUsername(signUpRequest.getUsername())) {
                         return ResponseEntity
                                         .badRequest()
-                                        .body(new MessageResponse("Error: Username is already taken!"));
+                                        .body(new MessageResponse("Erro: O nome de usuário já está em uso!"));
                 }
 
                 if (userRepository.existsByEmail(signUpRequest.getEmail())) {
                         return ResponseEntity
                                         .badRequest()
-                                        .body(new MessageResponse("Error: Email is already in use!"));
+                                        .body(new MessageResponse("Erro: O e-mail já está em uso!"));
                 }
+
+                if (userRepository.existsByPhone(signUpRequest.getPhone())) {
+                        return ResponseEntity
+                                        .badRequest()
+                                        .body(new MessageResponse("Erro: O número de telefone já está em uso!"));
+                }
+                
 
                 // Create new user's account
                 User user = new User(signUpRequest.getUsername(),
@@ -111,7 +118,9 @@ public class AuthController {
                                 signUpRequest.getAddress(),
                                 signUpRequest.getNif(),
                                 signUpRequest.getNationality(),
-                                signUpRequest.getMaritalStatus());
+                                signUpRequest.getMaritalStatus(),
+                                signUpRequest.getUrlDocument()
+                                );
 
                 Set<String> strRoles = signUpRequest.getRole();
                 Set<Role> roles = new HashSet<>();
@@ -159,6 +168,7 @@ public class AuthController {
                                 user.getAddress(),
                                 user.getNationality(),
                                 user.getMaritalStatus(),
+                                user.getUrlDocument(),
                                 "User registered successfully!"));
         }
 }

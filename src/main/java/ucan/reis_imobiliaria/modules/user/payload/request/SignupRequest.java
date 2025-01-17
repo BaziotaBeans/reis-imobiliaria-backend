@@ -35,6 +35,8 @@ public class SignupRequest {
 
     private String maritalStatus; 
 
+    private String urlDocument;
+
     public String getUsername() {
         return username;
     }
@@ -65,6 +67,14 @@ public class SignupRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setUrlDocument(String urlDocument) {
+        this.urlDocument = urlDocument;
+    }
+
+    public String getUrlDocument() {
+        return this.urlDocument;
     }
 
     public Set<String> getRole() {

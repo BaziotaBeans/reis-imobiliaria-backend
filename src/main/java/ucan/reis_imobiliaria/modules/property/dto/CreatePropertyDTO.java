@@ -47,5 +47,14 @@ public class CreatePropertyDTO {
     private PropertyStatus propertyStatus;
 
     private List<PropertyScheduleDTO> schedules;
-    
+
+    private double latitude;
+
+    private double longitude;
+
+    private String conservation;
+
+    private String propertyType;
+
+    private double condominiumFee;
 }
