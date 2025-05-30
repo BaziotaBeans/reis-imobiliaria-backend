@@ -38,6 +38,7 @@ public class PropertyUtil {
     public enum PropertyStatus {
         PUBLISHED, // Disponível para ser agendado para visitas
         STANDBY, // Aguardando ser publicado ou disponibilizado para visitas
-        RENTED // Já foi arrendado, não está disponível para novas visitas
+        RENTED, // Já foi arrendado, não está disponível para novas visitas
+        DENIED
     }
 }

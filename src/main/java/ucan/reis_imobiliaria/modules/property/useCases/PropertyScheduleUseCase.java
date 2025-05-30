@@ -5,6 +5,7 @@ import java.time.temporal.ChronoField;
 import java.util.List;
 import java.util.UUID;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,5 +30,13 @@ public class PropertyScheduleUseCase {
     
     public List<PropertyScheduleEntity> getAvailableSchedules(UUID propertyId) {
         return propertyScheduleRepository.findAvailableSchedulesByPropertyId(propertyId);
+    }
+
+    @Transactional
+    public void updateScheduleStatus(UUID pkPropertySchedule, String status) {
+        PropertyScheduleEntity schedule = propertyScheduleRepository.findById(pkPropertySchedule)
+                .orElseThrow(() -> new RuntimeException("Schedule not found"));
+        schedule.setStatus(status);
+        propertyScheduleRepository.save(schedule);
     }
 }

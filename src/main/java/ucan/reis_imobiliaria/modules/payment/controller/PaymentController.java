@@ -3,22 +3,19 @@ package ucan.reis_imobiliaria.modules.payment.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import jakarta.persistence.EntityNotFoundException;
 import ucan.reis_imobiliaria.modules.payment.PaymentRepository;
 import ucan.reis_imobiliaria.modules.payment.dto.PaymentDTO;
 import ucan.reis_imobiliaria.modules.payment.entities.PaymentEntity;
 import ucan.reis_imobiliaria.modules.payment.useCases.PaymentUseCase;
+import ucan.reis_imobiliaria.modules.schedulingPaymentEntity.entities.SchedulingPaymentEntity;
 
 @RestController
 @RequestMapping("/api/payments")
@@ -73,5 +70,21 @@ public class PaymentController {
     @GetMapping("/last")
     public ResponseEntity<PaymentEntity> findLastPayment() {
         return paymentUseCase.findLastPayment().map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/company-user-associated/{userId}")
+    public ResponseEntity<?> getPaymentsAssociatedWithUser(@PathVariable UUID userId) {
+        if (userId == null) {
+            return new ResponseEntity<>("User ID cannot be null", HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            List<PaymentEntity> payments = paymentUseCase.findPaymentsByCompanyUser(userId);
+            return payments.isEmpty()
+                    ? new ResponseEntity<>("No payments found", HttpStatus.NO_CONTENT)
+                    : new ResponseEntity<>(payments, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

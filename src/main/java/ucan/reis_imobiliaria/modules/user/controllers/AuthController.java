@@ -1,5 +1,6 @@
 package ucan.reis_imobiliaria.modules.user.controllers;
 
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ucan.reis_imobiliaria.modules.email.EmailService;
 import ucan.reis_imobiliaria.modules.user.entities.ERole;
 import ucan.reis_imobiliaria.modules.user.entities.Role;
 import ucan.reis_imobiliaria.modules.user.entities.User;
@@ -46,6 +49,9 @@ public class AuthController {
 
         @Autowired
         UserRepository userRepository;
+
+        @Autowired
+        private EmailService emailService;
 
         @Autowired
         RoleRepository roleRepository;
@@ -89,7 +95,7 @@ public class AuthController {
         }
 
         @PostMapping("/signup")
-        public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+        public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) throws MessagingException, UnsupportedEncodingException {
                 if (userRepository.existsByUsername(signUpRequest.getUsername())) {
                         return ResponseEntity
                                         .badRequest()
@@ -157,6 +163,7 @@ public class AuthController {
 
                 user.setRoles(roles);
                 userRepository.save(user);
+                emailService.sendMailWithInline(user);
 
                 return ResponseEntity.ok(new SignUpResponse(
                                 user.getPkUser(),

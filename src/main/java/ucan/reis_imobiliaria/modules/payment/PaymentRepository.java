@@ -1,5 +1,6 @@
 package ucan.reis_imobiliaria.modules.payment;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,4 +15,11 @@ public interface PaymentRepository extends JpaRepository<PaymentEntity, UUID> {
 
     @Query(value = "SELECT * FROM payments ORDER BY created_at DESC LIMIT 1", nativeQuery = true)
     Optional<PaymentEntity> findLastPayment();
+
+    @Query("SELECT payment FROM PaymentEntity payment " +
+            "JOIN payment.property property " +
+            "JOIN property.companyEntity company " +
+            "JOIN company.user user " +
+            "WHERE user.pkUser = :userId")
+    List<PaymentEntity> findByCompanyUserId(UUID userId);
 }

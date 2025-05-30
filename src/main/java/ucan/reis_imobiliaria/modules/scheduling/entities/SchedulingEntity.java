@@ -1,5 +1,6 @@
 package ucan.reis_imobiliaria.modules.scheduling.entities;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -38,6 +39,9 @@ public class SchedulingEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_user")
     private User user;
+
+    @Column(name = "scheduled_date", nullable = false)
+    private LocalDate scheduledDate;
 
     @Column(columnDefinition = "TEXT")
     private String note; 

@@ -18,7 +18,7 @@ public interface PropertyScheduleRepository extends JpaRepository<PropertySchedu
     // pse.pkPropertySchedule AND FUNCTION('DATE', se.createdAt) = CURRENT_DATE)")
     // @Query("SELECT pse FROM PropertyScheduleEntity pse WHERE pse.property.pkProperty = :pkProperty AND pse.pkPropertySchedule NOT IN (SELECT s.propertySchedule.pkPropertySchedule FROM SchedulingEntity s WHERE DATE(s.createdAt) = CURRENT_DATE) AND pse.dayOfWeek <> FUNCTION('DAYOFWEEK', CURRENT_DATE) - 1")
     
-    @Query(value = "SELECT pse.* FROM property_schedule pse WHERE pse.fk_property = :pkProperty AND NOT EXISTS (SELECT 1 FROM scheduling s WHERE s.fk_property_schedule = pse.pk_property_schedule AND EXTRACT(DOW FROM s.created_at) = EXTRACT(DOW FROM CURRENT_DATE))", nativeQuery = true)
+    @Query(value = "SELECT pse.* FROM property_schedule pse WHERE pse.fk_property = :pkProperty AND pse.status = 'AVAILABLE' AND NOT EXISTS (SELECT 1 FROM scheduling s WHERE s.fk_property_schedule = pse.pk_property_schedule AND EXTRACT(DOW FROM s.scheduled_date) = EXTRACT(DOW FROM CURRENT_DATE))", nativeQuery = true)
     
     // @Query(value = "SELECT pse.* FROM property_schedule pse WHERE pse.fk_property = :pkProperty AND NOT EXISTS (SELECT 1 FROM scheduling s WHERE s.fk_property_schedule = pse.pk_property_schedule AND EXTRACT(DOW FROM s.created_at) = EXTRACT(DOW FROM CURRENT_DATE)) AND (EXTRACT(DOW FROM CURRENT_DATE) <> pse.day_of_week OR CURRENT_TIME > pse.end_time)", nativeQuery = true)
     

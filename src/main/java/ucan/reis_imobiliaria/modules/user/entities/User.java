@@ -107,7 +107,4 @@ public class User {
       this.maritalStatus = maritalStatus;
       this.urlDocument = urlDocument;
     }
-
-
-
 }

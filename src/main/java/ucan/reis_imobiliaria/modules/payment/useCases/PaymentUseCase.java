@@ -1,7 +1,9 @@
 package ucan.reis_imobiliaria.modules.payment.useCases;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -72,5 +74,9 @@ public class PaymentUseCase {
 
     public Optional<PaymentEntity> findLastPayment() {
         return paymentRepository.findLastPayment();
+    }
+
+    public List<PaymentEntity> findPaymentsByCompanyUser(UUID userId) {
+        return paymentRepository.findByCompanyUserId(userId);
     }
 }

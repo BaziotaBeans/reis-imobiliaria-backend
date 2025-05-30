@@ -73,6 +73,17 @@ public class SchedulingController {
         return new ResponseEntity<>(schedulings, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'COMPANY', 'USER')")
+    @GetMapping("/last")
+    public ResponseEntity<?> getLastScheduling() {
+        try {
+            SchedulingEntity lastScheduling = schedulingUseCase.findLastScheduling();
+            return new ResponseEntity<>(lastScheduling, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Nenhum agendamento encontrado.", HttpStatus.NOT_FOUND);
+        }
+    }
+
     @DeleteMapping("/{pkScheduling}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> delete(@PathVariable UUID pkScheduling) {

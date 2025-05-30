@@ -33,6 +33,9 @@ public class PropertyScheduleEntity {
     @Column(nullable = false)
     private LocalTime endTime;
 
+    @Column(name = "status", nullable = false)
+    private String status = "AVAILABLE"; // NEW ATTRIBUTE (e.g., AVAILABLE, UNAVAILABLE)
+
     // Relacionamento bidirecional com PropertyEntity (se necessário)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_property")

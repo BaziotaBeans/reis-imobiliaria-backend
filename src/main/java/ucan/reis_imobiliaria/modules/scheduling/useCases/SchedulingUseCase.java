@@ -19,8 +19,12 @@ import ucan.reis_imobiliaria.modules.property.entities.PropertyEntity;
 import ucan.reis_imobiliaria.modules.property.entities.PropertyScheduleEntity;
 import ucan.reis_imobiliaria.modules.scheduling.SchedulingRepository;
 import ucan.reis_imobiliaria.modules.scheduling.entities.SchedulingEntity;
+import ucan.reis_imobiliaria.modules.schedulingPaymentEntity.SchedulingPaymentRepository;
+import ucan.reis_imobiliaria.modules.schedulingPaymentEntity.entities.SchedulingPaymentEntity;
 import ucan.reis_imobiliaria.modules.user.entities.User;
 import ucan.reis_imobiliaria.modules.user.repository.UserRepository;
+
+import static ucan.reis_imobiliaria.modules.scheduling.utils.SchedulingUtil.calculateNextDate;
 
 @Service
 public class SchedulingUseCase {
@@ -37,6 +41,9 @@ public class SchedulingUseCase {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private SchedulingPaymentRepository schedulingPaymentRepository;
+
 
     public List<SchedulingEntity> findAll() {
         return schedulerRepository.findAll();
@@ -44,31 +51,39 @@ public class SchedulingUseCase {
 
     public Optional<SchedulingEntity> createScheduling(UUID pkPropertySchedule, UUID pkProperty) {
 
-        boolean exists = schedulerRepository.existsByPropertyScheduleIdAndCreatedAt(pkPropertySchedule,
-                LocalDate.now());
+        PropertyScheduleEntity propertySchedule = propertyScheduleRepository.findById(pkPropertySchedule)
+                .orElseThrow(() -> new RuntimeException("PropertySchedule not found"));
+
+        LocalDate scheduledDate = calculateNextDate(propertySchedule.getDayOfWeek(), propertySchedule.getStartTime());
+
+        // Verifica se já existe agendamento
+        boolean exists = schedulerRepository.existsByPropertyScheduleIdAndScheduledDate(
+                pkPropertySchedule,
+                scheduledDate
+        );
 
         if (exists) {
             return Optional.empty();
         }
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         String username = authentication.getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        Optional<User> userOptional = userRepository.findByUsername(username);
 
-        User user = userOptional.orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-        PropertyScheduleEntity propertySchedule = propertyScheduleRepository.findById(pkPropertySchedule)
-                .orElseThrow(() -> new RuntimeException("PropertySchedule not found"));
         PropertyEntity property = propertyRepository.findById(pkProperty)
-                .orElseThrow(() -> new RuntimeException("Property not found")); // Assumindo que você tem esse
-                                                                                // repositório
+                .orElseThrow(() -> new RuntimeException("Property not found"));
+
+        // Atualiza o status do PropertySchedule para UNAVAILABLE
+        propertySchedule.setStatus("UNAVAILABLE");
+        propertyScheduleRepository.save(propertySchedule);
 
         SchedulingEntity scheduling = new SchedulingEntity();
         scheduling.setPropertySchedule(propertySchedule);
         scheduling.setProperty(property);
         scheduling.setUser(user);
+        scheduling.setScheduledDate(scheduledDate);
 
         return Optional.of(schedulerRepository.save(scheduling));
     }
@@ -81,11 +96,48 @@ public class SchedulingUseCase {
         return schedulerRepository.findByCompany(companyId);
     }
 
+    public SchedulingEntity findLastScheduling() {
+        return schedulerRepository.findLastScheduling();
+    }
+
     @Transactional
     public void delete(UUID pkScheduling) {
         Optional<SchedulingEntity> schedulingOptional = schedulerRepository.findById(pkScheduling);
+        if (schedulingOptional.isPresent()) {
+            SchedulingEntity scheduling = schedulingOptional.get();
 
-        schedulerRepository.delete(schedulingOptional.get());
+            // Recuperar o schedule relacionado
+            PropertyScheduleEntity propertySchedule = scheduling.getPropertySchedule();
+            if (propertySchedule == null) {
+                throw new RuntimeException("PropertySchedule não encontrado para o agendamento fornecido");
+            }
+
+            // Buscar todos os pagamentos que possam estar relacionados ao agendamento
+            List<SchedulingPaymentEntity> payments = schedulingPaymentRepository.findByScheduledDateAndPropertyAndScheduleDetails(
+                    scheduling.getScheduledDate(),
+                    scheduling.getProperty(),
+                    String.format(
+                            "Data: %s, Dia da Semana: %s, Horário: %s - %s",
+                            scheduling.getScheduledDate(),
+                            propertySchedule.getDayOfWeek(),
+                            propertySchedule.getStartTime(),
+                            propertySchedule.getEndTime()
+                    )
+            );
+
+            // Remover todos os pagamentos relacionados
+            payments.forEach(schedulingPaymentRepository::delete);
+
+            // Atualiza o status do PropertySchedule para AVAILABLE
+            // PropertyScheduleEntity propertySchedule = scheduling.getPropertySchedule();
+            propertySchedule.setStatus("AVAILABLE");
+            propertyScheduleRepository.save(propertySchedule);
+
+            // Remove o agendamento
+            schedulerRepository.delete(scheduling);
+        } else {
+            throw new RuntimeException("Agendamento não encontrado");
+        }
     }
 
 }
